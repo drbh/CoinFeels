@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <title>Train Crypto Sentiment Engine</title>
+</head>
+<style type="text/css">
+/*td {
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.fa {
+    font-size: 3em;
+    color: #eca0a0;
+    margin-top: 9px;
+}*/
+.main_row_container{
+    overflow-y: scroll;
+}
+.main_row {
+    height: 115px;
+    width: calc(18*100px);
+    overflow-x: auto;
+}
+
+.card-header {
+    background-color: rgba(0, 0, 0, 0) !important;
+}
+
+.card {
+    width: 100px;
+    height: 100px;
+    margin: 3px 3px 3px 3px;
+    font-size: 8pt;
+}
+
+.card-title {
+    font-size: 10pt;
+}
+</style>
+
+<body>
+    <div class="container col-xs-12">
+        <div class="main_row_container">
+            <div class="row main_row"></div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+var build_card = function(card_class, card_header, card_title, card_text) {
+    var card_class = card_class
+    var card_header = card_header
+    var card_title = card_title
+    var card_text = card_text
+
+    var card_string = `<div class="card text-white bg-` + card_class + ` mb-3 col-xs-2">
+                        <div class="card-header">` + card_header + `</div>
+                        <div class="card-body">
+                            <h5 class="card-title">` + card_title + `</h5>
+                            <p class="card-text" alt="` + card_text + `">` + card_text + `</p>
+                        </div>
+                    </div>`
+    $(".main_row").append(card_string)
+}
+
+$.ajax({
+    url: '/analyze-rss',
+    success: function(result) {
+        $.each(result, function(index, el) {
+            // add_row(index, el.title, el.link)
+            var obj = el['summary']
+
+            var card_color = ''
+            if (obj['label'] == 'neg') {
+                card_color = "danger"
+            }
+            if (obj['label'] == 'pos') {
+                card_color = "success"
+            }
+            build_card(card_color, obj['label'], obj['score'], obj['title'])
+            console.log(el)
+        });
+    }
+});
+</script>
+
+</html>

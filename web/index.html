@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <title>Train Crypto Sentiment Engine</title>
+</head>
+<style type="text/css">
+td {
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.fa {
+    font-size: 3em;
+    color: #eca0a0;
+    margin-top: 9px;
+}
+</style>
+
+<body>
+    <div class="container .col-xs-12">
+        <div class="row">
+          <pre id="info"></pre>
+        </div>
+        <div class="row">
+            <i class="fa fa-close" aria-hidden="true"></i>
+        </div>
+        <div class="row">
+            <table class="table main-table">
+                <thead class="thead-inverse">
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Link</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+// '/analyze-rss'
+// '/analyze-text'
+// '/get-rss'
+// '/label-rss'
+
+var add_row = function(index, title, link) {
+    var idx = index
+    var title = title
+    var link = link
+    var pos = '<i class="fa fa-plus" aria-hidden="true"></i>'
+    var net = '<i class="fa fa-close" aria-hidden="true"></i>'
+    var neg = '<i class="fa fa-minus" aria-hidden="true"></i>'
+    var row_html = `
+                <tr>
+                    <th scope="row">` + idx + `</th>
+                    <td>` + title + `</td>
+                    <td><a href="` + link + `" target="_blank" >` + link.substring(0, 26) + `</a> </td>
+                    <td>` + pos + `</td>
+                    <td>` + net + `</td>
+                    <td>` + neg + `</td>
+                </tr>
+              `
+    $(".main-table tbody").append(row_html)
+
+    // console.log($('.main-table tbody:last').html())
+}
+
+$.ajax({
+    url: '/get-rss',
+    success: function(result) {
+        $.each(result, function(index, el) {
+            add_row(index, el.title, el.link)
+            // console.log(el)
+        });
+
+
+        $('.fa.fa-plus').on('click', function(event) {
+            event.preventDefault();
+            var ROW = $(this).parent().parent()
+            ROW.css({ "background-color": "green" })
+
+            var x = ROW.find("td").first().text()
+            console.log(x)
+
+            $.ajax({
+                url: '/save-positive' + '?' + x,
+                success: function(result) {
+                  $("#info").text(JSON.stringify(result))
+                }
+            });
+
+            $(this).parent().parent().toggle(1250)
+
+
+
+        });
+        $('.fa.fa-close').on('click', function(event) {
+            event.preventDefault();
+            var ROW = $(this).parent().parent()
+            ROW.css({ "background-color": "yellow" })
+            console.log(ROW.html())
+
+            $(this).parent().parent().toggle(1250)
+
+        });
+        $('.fa.fa-minus').on('click', function(event) {
+            event.preventDefault();
+            var ROW = $(this).parent().parent()
+            ROW.css({ "background-color": "red" })
+            console.log(ROW.html())
+
+
+            var x = ROW.find("td").first().text()
+            console.log(x)
+
+            $.ajax({
+                url: '/save-negative' + '?' + x,
+                success: function(result) {
+                  $("#info").text(JSON.stringify(result))
+                }
+            });
+
+            $(this).parent().parent().toggle(1250)
+
+
+        });
+
+    }
+});
+</script>
+
+</html>
