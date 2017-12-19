@@ -75,6 +75,6 @@ def save_negative():
 
 
 if __name__ == '__main__':
-    app.run(port=21212)
-    app['debug'] = True 
+    app.run(host='0.0.0.0', port=21212)
+    # app['debug'] = True 
 

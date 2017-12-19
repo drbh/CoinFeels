@@ -38,7 +38,6 @@ class CoinFeels(object):
         self.symbol = symbol
         
     def populate_articles(self):
-
         # https://www.ccn.com:443
         d = parse('https://news.google.com/news/rss/search/section/q/'+self.symbol+'/'+self.symbol+'?hl=en&gl=US&ned=us')
         articles = list()
